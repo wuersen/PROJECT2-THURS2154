@@ -27,7 +27,7 @@ function SlackHome () {
    let history = useHistory();
 
   const channelsRef = firestore.collection('channels');
-  const query = channelsRef.orderBy('createdAt').limit(25);
+  const query = channelsRef.orderBy('topic').limit(25);
   const[channels] = useCollectionData(query);
   const [formValue, setFormValue] = useState('')
 
@@ -40,7 +40,13 @@ function SlackHome () {
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       uid,
       photoURL,
-    });
+    }).then(docRef => {
+      firestore.doc(`channels/${docRef.id}`).set({
+        channelId: docRef.id,
+      }, { merge: true })
+
+
+    })
  }
 
 const[searchForm, setsearchForm] = useState('')
@@ -62,7 +68,7 @@ const fetchMessages = function (e){              /////display messages
          channelNow = doc.id
          channelNowTopic = doc.data().topic
 
-         firestore.collection("channels").doc(channelId).collection('messages').orderBy('createdAt').get().then((querySnapshot) =>{
+         firestore.collection("channels").doc(channelId).collection('messages').orderBy('topic').get().then((querySnapshot) =>{
          const messages = [];
          querySnapshot.forEach((doc) => {
          messages.push(doc.data());
@@ -98,7 +104,7 @@ const createMessage = async(e) => {               ////create messages
       const messages = [];
       querySnapshot.forEach((doc) => {
       messages.push(doc.data());
-    })
+      })
     setMessages(messages);
   })
  }
@@ -121,43 +127,39 @@ const updateMessages = () => {
 
 
 const getChannel = function(e){
-  const topics = []
-    e.preventDefault();
+   const topics = []
+   e.preventDefault();
    channels.map((channel) =>
    topics.push(channel.topic)
-  );
+   );
 
-  topics.map((topic)=>
-  (topic === this.state.searchFrom) ? console.log(topic) : console.log("no match")
-);
-
+   topics.map((topic)=>
+   (topic === this.state.searchFrom) ? console.log(topic) : console.log("no match")
+ );
 }
 
 
 
 return (
     <div>
-     <div className="headers">
-        <h1><img height='30' width='30'className='titleImage' src="https://cdn.iconscout.com/icon/free/png-512/slack-226533.png" alt=""/>SlackME</h1>
+      <div className="headers">
+           <h1><img height='30' width='30'className='titleImage' src="https://cdn.iconscout.com/icon/free/png-512/slack-226533.png" alt=""/>SlackME</h1>
 
-
-        <div className="header__search">
-          <div className="SearchIcon">
-          <SearchIcon />
+          <div className="header__search">
+              <div className="SearchIcon">
+                 <SearchIcon />
+             </div>
+             <div className="header_search_input">
+                 <form onSubmit={getChannel}>
+                     <input className="header_search_input" placeholder="Search..."  value={searchForm} onChange={(e) => setsearchForm(e.target.value)}/>
+                 </form>
+             </div>
           </div>
-         <div className="header_search_input">
-          <form onSubmit={getChannel}>
-            <input className="header_search_input" placeholder="Search..."  value={searchForm} onChange={(e) => setsearchForm(e.target.value)}/>
-          </form>
-          </div>
-        </div>
 
 
 
-        <div className="Signout">
-
-
-          <Signout/>
+           <div className="Signout">
+              <Signout/>
           </div>
       </div>
 

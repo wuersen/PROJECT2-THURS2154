@@ -1,12 +1,13 @@
 import firebase from 'firebase'
 
 firebase.initializeApp ({
-   apiKey: "AIzaSyCe-q8I5Nz57sR-xLpeQ5uUAdGkuIkH8_M",
-   authDomain: "slackme-62cda.firebaseapp.com",
-   projectId: "slackme-62cda",
-   storageBucket: "slackme-62cda.appspot.com",
-   messagingSenderId: "772038854674",
-   appId: "1:772038854674:web:b2fd05752db1eba11df0cb",
+   apiKey: "AIzaSyCTdb8-cZxblj2yHh4CKHSptsdkV2Xg53A",
+   authDomain: "slackme-thurs2154.firebaseapp.com",
+   projectId: "slackme-thurs2154",
+   storageBucket: "npm",
+   messagingSenderId: "16419578255",
+   appId: "1:16419578255:web:0b15e4a0ab9c78261d6bfa",
+   measurementId: "G-RY2N8PCTS2"
 
 })
 
@@ -31,24 +32,23 @@ export const generateUserDocument = async (user, additionalData) => {
 
   const snapshot = await userRef.get();
 
-  if (!snapshot.exists) {
-    const { email, displayName, photoURL } = user;
-    try {
-      await userRef.set({
-        displayName,
-        email,
-        photoURL,
-        ...additionalData
-      });
-      await channelRef.set({
-
-      });
-    } catch (error) {
-      console.error("Error creating user document", error);
+    if (!snapshot.exists) {
+      const { email, displayName, photoURL } = user;
+         try {
+           await userRef.set({
+             displayName,
+             email,
+             photoURL,
+             ...additionalData
+           });
+           await channelRef.set({
+           });
+         } catch (error) {
+       console.error("Error creating user document", error);
     }
   }
   return getUserDocument(user.uid);
-};
+ };
 
 const getUserDocument = async uid => {
   if (!uid) return null;
